@@ -102,7 +102,6 @@ contains
        integer,intent(in) :: lmin,lmax
        real(8),intent(in) :: ACF(0:256,0:256),BCF(0:256,0:256), &
        mu,phi,beta 
-       ! real(8) :: SGS
 
        RGS=exp(SGS(ACF,BCF,mu,phi,lmin,lmax)-0.5d0*beta**2)
        end function RGS
@@ -161,9 +160,11 @@ contains
 ! Copyright (C) 2002 Karri Muinonen
 
        implicit none
-       integer :: l,lmin,lmax,m
-       real(8) :: ACF(0:256,0:256),BCF(0:256,0:256), &
-       SCFSTD(0:256,0:256),rn
+       integer,intent(in) :: lmin,lmax
+       real(8),intent(in) :: SCFSTD(0:256,0:256)
+       real(8),intent(inout) :: ACF(0:256,0:256),BCF(0:256,0:256)
+       integer :: l,m
+       real(8) :: rn
 
        do 10 l=lmin,lmax
         call RNDG(rn)

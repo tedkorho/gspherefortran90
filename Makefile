@@ -10,9 +10,9 @@ clean:
 	rm $(OBJS) $(MODFILES)
 
 main: lib/gsphere.f90 lib/corrfunc.f90 lib/discrets.f90 lib/gsg.f90 lib/gsaxg.f90 lib/randev.f90 lib/specfunc.f90 lib/voper.f90
-	gfortran -c $(LOWLEVELMODS)
-	gfortran -c $(MODS)
-	gfortran -c $(MAINPROG)
-	gfortran -o gsphere $(OBJS)
+	gfortran -c $(LOWLEVELMODS) -Wall
+	gfortran -c $(MODS) -Wall
+	gfortran -c $(MAINPROG) -Wall
+	gfortran -o gsphere $(OBJS) -Wall
 	rm -f *.o
 	rm -f *.mod

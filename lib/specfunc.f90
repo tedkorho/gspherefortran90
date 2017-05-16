@@ -22,7 +22,8 @@ contains
 ! Copyright (C) 2003 Karri Muinonen
 
        implicit none
-       real(8) :: x,y,f0,the0
+       real(8),intent(in) :: x
+       real(8) :: y,f0,the0
 
        y=x/3.0d0
        if  (x.le.3.0d0) then
@@ -52,7 +53,8 @@ contains
 ! Copyright (C) 2003 Karri Muinonen
 
        implicit none
-       real(8) :: x,y,f1,the1
+       real(8),intent(in) :: x
+       real(8) :: y,f1,the1
 
        y=x/3.0d0
        if  (x.le.3.0d0) then
@@ -82,8 +84,11 @@ contains
 ! Copyright (C) 2002 Karri Muinonen
 
        implicit none
-       integer :: j1,n,nini
-       real(8) :: BESISE(0:256),x,b,b0,b1,renorm
+       integer,intent(in) :: n
+       real(8),intent(in) :: x
+       real(8),intent(inout) :: BESISE(0:256)
+       integer :: j1,nini
+       real(8) :: b,b0,b1,renorm
       
 ! Orders n=0 and n=1:
 
@@ -127,9 +132,11 @@ contains
 ! Copyright (C) 2002 Karri Muinonen
 
        implicit none
-       integer :: lmax,l,m
-       real(8) :: LEGP(0:256,0:256),x
-       double complex GSP(0:256,0:256,-2:2),i
+       integer,intent(in) :: lmax,m
+       real(8),intent(in) :: x
+       real(8),intent(inout) :: LEGP(0:256,0:256)
+       integer :: l
+       double complex :: GSP(0:256,0:256,-2:2),i
 
        i=dcmplx(0.0d0,1.0d0)
 
@@ -165,9 +172,12 @@ contains
 ! Copyright (C) 2002 Karri Muinonen
 
        implicit none
-       integer :: lmax,l,m0,m1,m2,m12,p12
-       real(8) :: x
-       double complex GSP(0:256,0:256,-2:2),i
+       integer,intent(in) :: lmax,m1,m2
+       real(8),intent(in) :: x
+       double complex,intent(inout) :: GSP(0:256,0:256,-2:2)
+       integer :: l,m0,m12,p12
+       double complex :: i
+       
 
        i=dcmplx(0.0d0,1.0d0)
 
@@ -242,7 +252,8 @@ contains
 ! Copyright (C) 2002 Timo Nousiainen
 
        implicit none
-       real(8) :: GAMLN,stp,pi,x,xx,temp,arg1,arg2
+       real(8),intent(in) :: x
+       real(8) :: GAMLN,stp,pi,xx,temp,arg1,arg2
        parameter (pi=3.1415926535898d0)
 
        if (x.le.0.0d0) then
@@ -280,7 +291,7 @@ contains
 ! Copyright (C) 2002 Timo Nousiainen
 
        implicit none
-       integer :: x 
+       integer,intent(in) :: x 
        real(8) :: FACTI,xx
 
        if (x.lt.0) then

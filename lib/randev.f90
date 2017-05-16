@@ -47,8 +47,9 @@ contains
 ! Copyright (C) 2002 Karri Muinonen
 
        implicit none
+       real(8),intent(inout) :: r1
        integer :: flg,irnd
-       real(8) :: q1,q2,r1,r2
+       real(8) :: q1,q2,r2
        save flg,r2
        data flg/0/
        common irnd
