@@ -128,7 +128,7 @@ contains
 
        implicit none
        integer :: lmax,l,m
-       real(8) :: LEGP(0:256,0:256),FACTI,x
+       real(8) :: LEGP(0:256,0:256),x
        double complex GSP(0:256,0:256,-2:2),i
 
        i=dcmplx(0.0d0,1.0d0)
@@ -166,7 +166,7 @@ contains
 
        implicit none
        integer :: lmax,l,m0,m1,m2,m12,p12
-       real(8) :: FACTI,x
+       real(8) :: x
        double complex GSP(0:256,0:256,-2:2),i
 
        i=dcmplx(0.0d0,1.0d0)
@@ -242,7 +242,7 @@ contains
 ! Copyright (C) 2002 Timo Nousiainen
 
        implicit none
-       real(8) :: gamln,stp,pi,x,xx,temp,arg1,arg2
+       real(8) :: GAMLN,stp,pi,x,xx,temp,arg1,arg2
        parameter (pi=3.1415926535898d0)
 
        if (x.le.0.0d0) then
@@ -281,7 +281,7 @@ contains
 
        implicit none
        integer :: x 
-       real(8) :: FACTI,GAMLN,xx
+       real(8) :: FACTI,xx
 
        if (x.lt.0) then
         write (*,*) 'Trouble in FACTI: x must be non-negative! Exiting.'

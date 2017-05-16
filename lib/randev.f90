@@ -48,7 +48,7 @@ contains
 
        implicit none
        integer :: flg,irnd,xrandom
-       real(8) :: RNDU,q1,q2,r1,r2
+       real(8) :: q1,q2,r1,r2
        save flg,r2
        data flg/0/
        common irnd

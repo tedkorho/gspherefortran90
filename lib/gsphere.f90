@@ -46,16 +46,10 @@ program GSPHERE
 ! You should have received a copy of the GNU General Publi! License
 ! along with this program; if not, write to the Free Software
 ! Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-! Included library subroutine and function packages:
 !
-!       include 'lib/discrets.f90'! Discretization.
-!       include 'lib/gsg.f90'     ! G-sphere generator.
-!       include 'lib/gsaxg.f90'   ! Axisymmetri! G-sphere generator.
-!       include 'lib/corrfunc.f90'! Correlation functions.
-!       include 'lib/voper.f90'   ! Vector rotations and product.
-!       include 'lib/specfunc.f90'! Special functions.
-!       include 'lib/randev.f90'  ! Random deviates.
+       !
+       ! Included modules:
+       !
        use corrfunc			! Correlation functions.
        use discrets			! Discretization.
        use gsaxg			! Axisymmetric G-sphere generator.
@@ -69,19 +63,20 @@ program GSPHERE
        j0,j1,j2,gflg,dflg,cflg
 
        integer :: IT(260000,3),nthe,nphi,ntr,nnod,ntri
-       double precision :: XS(0:180,0:360,3), &
+       real(8) :: XS(0:180,0:360,3), &
         MUS(0:180),PHIS(0:360)
-       double precision :: XT(130000,3),NT(260000,3), &
+       real(8) :: XT(130000,3),NT(260000,3), &
         MUT(130000),PHIT(130000)
 
-       double precision :: ACF(0:256,0:256),BCF(0:256,0:256), &
+       real(8) :: ACF(0:256,0:256),BCF(0:256,0:256), &
         SCFSTD(0:256,0:256),CSCF(0:256), &
-         EU(3),CEU(3),SEU(3),RGS,RGSAX,a,sig,beta,gami,elli, &
+         EU(3),CEU(3),SEU(3),a,sig,beta,gami,elli, &
           gam,nuc,ell,cs2d,cs4d,the,mu,grid,rmax,pi,rd
-       character ca*2
+       character :: ca*2
+       character(32) :: infile,outfile
 
        integer :: irnd
-       double precision :: RNDU
+       ! real(8) :: RNDU
        common irnd
 
 ! Initializations:
@@ -92,28 +87,34 @@ program GSPHERE
        irnd=1
        irnd=4*irnd+1
        a=RNDU(irnd)
+       
+! Input file specified in command line argument:
+
+       call getarg(1, infile)
 
 ! Input parameters from option file:
 
-       open(unit=1, file='gsphere.in', status='old')
+       open(unit=1, file=trim(infile), status='old')
 
        a=1.0d0
        read (1,30) ca
-       read (1,20) gflg ! General (1) or axisymmetri! spheres (2).
-       read (1,20) dflg ! Spherical-coord. (1) or triangle (2) discretization.
-       read (1,20) cflg ! Cor. function (C_1=power law, C_2=Gauss, C_3=file).
-       read (1,10) sig  ! Relative standard deviation of radial distance.
-       read (1,10) nuc  ! Power law index for C_1 correlation.
-       read (1,10) gami ! Input angle for C_2 correlation.
-       read (1,20) lmin ! Minimum degree in C_1, C_2, C_3.
-       read (1,20) lmax ! Maximum degree in C_1, C_2, C_3.
-       read (1,20) nthe ! Discretization: number of polar angles.
-       read (1,20) nphi ! Discretization: number of azimuths.
-       read (1,20) ntr  ! Discretization: number of triangle rows per octant.
-       read (1,20) nss  ! Sphere identification number.
+       read (1,20) gflg     ! General (1) or axisymmetri! spheres (2).
+       read (1,20) dflg     ! Spherical-coord. (1) or triangle (2) discretization.
+       read (1,20) cflg     ! Cor. function (C_1=power law, C_2=Gauss, C_3=file).
+       read (1,10) sig      ! Relative standard deviation of radial distance.
+       read (1,10) nuc      ! Power law index for C_1 correlation.
+       read (1,10) gami     ! Input angle for C_2 correlation.
+       read (1,20) lmin     ! Minimum degree in C_1, C_2, C_3.
+       read (1,20) lmax     ! Maximum degree in C_1, C_2, C_3.
+       read (1,20) nthe     ! Discretization: number of polar angles.
+       read (1,20) nphi     ! Discretization: number of azimuths.
+       read (1,20) ntr      ! Discretization: number of triangle rows per octant.
+       read (1,20) nss      ! Sphere identification number.
+       read (1,40) outfile  ! Name of the VTK output file.
 10     format (E12.6)
 20     format (I12)
 30     format (/A2/)
+40     format (A32)
        close(unit=1)
 
 ! Input check:
@@ -173,10 +174,10 @@ program GSPHERE
         call CS3CF(CSCF,lmin,lmax)
        endif
 
-       do 40 j1=lmin,lmax
+       do 50 j1=lmin,lmax
         if (CSCF(j1).lt.0.0d0) stop &
          'Trouble in GSPHERE: negative Legendre coefficient.'
-40     end do
+50     end do
 
        call SGSCFSTD(SCFSTD,CSCF,beta,lmin,lmax)
 
@@ -204,9 +205,9 @@ program GSPHERE
                      nthe,nphi,lmin,lmax)
         endif
 
-        open(unit=1, file='matlabx.out')            ! Matlab
-        open(unit=2, file='matlaby.out')
-        open(unit=3, file='matlabz.out')
+        open(unit=1, file='/output/matlabx.out')            ! Matlab
+        open(unit=2, file='/output/matlaby.out')
+        open(unit=3, file='/output/matlabz.out')
         do 110 j1=0,nthe
          write (1,115) (XS(j1,j2,1),j2=0,nphi)
          write (2,115) (XS(j1,j2,2),j2=0,nphi)
@@ -230,9 +231,9 @@ program GSPHERE
                      IT,nnod,ntri,lmin,lmax)
         endif
 
-        open(unit=1, file='matlabx.out')           ! Matlab
-        open(unit=2, file='matlaby.out')
-        open(unit=3, file='matlabz.out')
+        open(unit=1, file='/output/matlabx.out')           ! Matlab
+        open(unit=2, file='/output/matlaby.out')
+        open(unit=3, file='/output/matlabz.out')
         do 120 j2=1,3
          write (1,125) (XT(IT(j1,j2),1),j1=1,ntri)
          write (2,125) (XT(IT(j1,j2),2),j1=1,ntri)
@@ -243,7 +244,7 @@ program GSPHERE
         close(unit=2)
         close(unit=1)
 
-        open(unit=1, file='idl.out')               ! IDL
+        open(unit=1, file='/output/idl.out')               ! IDL
         write (1,*) nnod,ntri
         do 130 j1=1,nnod
          write (1,*) (XT(j1,j2),j2=1,3)
@@ -255,7 +256,7 @@ program GSPHERE
         close(unit=1)
 
 
-        open(unit=1, file='vtk.out')               ! VTK
+        open(unit=1, file=trim(outfile))               ! VTK
         write (1,150) '# vtk DataFile Version 2.0'
         write (1,150) 'gsphere output            '
         write (1,150) 'ASCII                     '

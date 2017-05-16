@@ -7,6 +7,8 @@ module corrfunc
 ! CS1CF   : power law correlation function
 ! CS2CF   : modified Gaussian correlation function
 ! CS3CF   : input correlation function coefficients from file
+        ! Modules used:
+        use specfunc    ! Special functions.
 
 contains
 
@@ -19,7 +21,7 @@ contains
 
        implicit none
        integer l,lmin,lmax,m
-       real(8) SCFSTD(0:256,0:256),CSCF(0:256),FACTI,beta
+       real(8) SCFSTD(0:256,0:256),CSCF(0:256),beta
 
        if (lmin.eq.0) then
         SCFSTD(0,0)=beta*sqrt(CSCF(0))

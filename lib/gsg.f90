@@ -6,6 +6,10 @@ module gsg
 ! RGS:     radial distance
 ! SGS:     logarithm of radial distance
 ! SGSCF:   spherical harmonics coefficient generation
+        ! Modules used:
+        use specfunc    ! Special functions.
+        use randev      ! Random deviates.
+        use voper       ! Vector operations
 
 contains
 
@@ -23,7 +27,7 @@ contains
        real(8) :: X(0:180,0:360,3),MU(0:180),PHI(0:360), &
        ACF(0:256,0:256),BCF(0:256,0:256),rmax,beta
        integer :: j1,j2
-       real(8) :: RGS,r,nu
+       real(8) :: r,nu
 
        rmax=0.0d0
        do 20 j1=0,nthe
@@ -51,7 +55,7 @@ contains
        implicit none
        integer :: IT(260000,3),nnod,ntri,lmin,lmax,j1,j2
        real(8) :: X(130000,3),N(260000,3),MU(130000), &
-       PHI(130000),ACF(0:256,0:256),BCF(0:256,0:256),RGS, &
+       PHI(130000),ACF(0:256,0:256),BCF(0:256,0:256), &
        X1(3),X2(3),X3(3),rmax,beta,r,nu
 
 ! Node coordinates:
@@ -95,7 +99,7 @@ contains
        integer :: lmin,lmax
        real(8),intent(in) :: ACF(0:256,0:256),BCF(0:256,0:256), &
        mu,phi,beta 
-       real(8) :: SGS
+       ! real(8) :: SGS
 
        RGS=exp(SGS(ACF,BCF,mu,phi,lmin,lmax)-0.5d0*beta**2)
        end function RGS
