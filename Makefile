@@ -14,3 +14,5 @@ main: lib/gsphere.f90 lib/corrfunc.f90 lib/discrets.f90 lib/gsg.f90 lib/gsaxg.f9
 	gfortran -c $(MODS)
 	gfortran -c $(MAINPROG)
 	gfortran -o gsphere $(OBJS)
+	rm -f *.o
+	rm -f *.mod
