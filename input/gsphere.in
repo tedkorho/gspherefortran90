@@ -13,3 +13,4 @@ INPUT FILE for gsphere.f (Version 2002-12-16)
 72             ! Discretization: number of azimuths.
 22              ! Discretization: number of triangle rows per octant.
 1               ! G-sphere identification number.
+output/out.vtk  ! VTK output file.
