@@ -47,7 +47,7 @@ contains
 ! Copyright (C) 2002 Karri Muinonen
 
        implicit none
-       integer :: flg,irnd,xrandom
+       integer :: flg,irnd
        real(8) :: q1,q2,r1,r2
        save flg,r2
        data flg/0/

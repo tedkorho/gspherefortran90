@@ -112,7 +112,7 @@ contains
 ! Copyright (C) 2002, 2003 Karri Muinonen
 
        implicit none
-       integer :: l,m,lmin,lmax
+       integer :: l,lmin,lmax
        real(8) :: ACF(0:256,0:256),LEGP(0:256,0:256), &
        CEU(3),SEU(3),X(3),mu,nu,phi,cphi,sphi,r0,mu0
 

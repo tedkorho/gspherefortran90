@@ -1,4 +1,3 @@
-
 program GSPHERE
 
 ! GSPHERE generates sample Gaussian spheres. Version 2003-12-10.
@@ -47,13 +46,16 @@ program GSPHERE
 ! along with this program; if not, write to the Free Software
 ! Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 !
+! This version of GSPHERE has been updated and refactored in 2017 to 
+! Fortran 2003+ spec from the original F77 version by Teo Korhonen.
+!
        !
        ! Included modules:
        !
-       use corrfunc			! Correlation functions.
-       use discrets			! Discretization.
-       use gsaxg			! Axisymmetric G-sphere generator.
-       use gsg				! G-sphere generator.
+       use corrfunc     ! Correlation functions.
+       use discrets     ! Discretization.
+       use gsaxg        ! Axisymmetric G-sphere generator.
+       use gsg          ! G-sphere generator.
        
        implicit none
        integer :: nss,lmin,lmax, &
@@ -67,8 +69,8 @@ program GSPHERE
 
        real(8) :: ACF(0:256,0:256),BCF(0:256,0:256), &
         SCFSTD(0:256,0:256),CSCF(0:256), &
-         EU(3),CEU(3),SEU(3),a,sig,beta,gami,elli, &
-          gam,nuc,ell,cs2d,cs4d,the,mu,grid,rmax,pi,rd
+         CEU(3),SEU(3),a,sig,beta,gami,elli, &
+          nuc,rmax,pi,rd
        character :: ca*2
        character(32) :: infile,outfile
 
@@ -221,7 +223,7 @@ program GSPHERE
         call TRIDS(MUT,PHIT,IT,nnod,ntri,ntr)
         if (gflg.eq.1) then
          call RGSTD(XT,NT,MUT,PHIT,ACF,BCF,rmax,beta, &
-     	 IT,nnod,ntri,lmin,lmax)
+          IT,nnod,ntri,lmin,lmax)
         else
          call RGSAXTD(XT,NT,MUT,PHIT,ACF,CEU,SEU,rmax,beta, &
                      IT,nnod,ntri,lmin,lmax)
@@ -271,6 +273,3 @@ program GSPHERE
         close(unit=1)
        endif
        end program GSPHERE
-
-
-

@@ -15,8 +15,10 @@ contains
 ! Copyright (C) 2002 Karri Muinonen
 
        implicit none
-       integer nthe,nphi,j1,j2
-       real(8) MU(0:180),PHI(0:360),dthe,dphi,pi
+       integer,intent(in) :: nthe,nphi
+       real(8),intent(inout) :: MU(0:180),PHI(0:360)
+       integer :: j1,j2
+       real(8) :: dthe,dphi,pi
 
        pi=4.0d0*atan(1.0d0)
        dthe=pi/nthe
@@ -42,10 +44,11 @@ contains
 ! Copyright (C) 2002 Karri Muinonen
 
        implicit none
-       integer IT(260000,3),NJJ(0:360,0:720),nnod,ntri,ntr, &
-       j0,j1,j2,j3,j4
-       real(8) U(130000,3),MU(130000),PHI(130000), &
-       the,fi,ct,st,cf,sf,pi
+       integer,intent(in) :: ntr
+       integer,intent(inout) :: IT(260000,3),nnod,ntri
+       real(8),intent(inout) :: MU(130000),PHI(130000)
+       integer :: NJJ(0:360,0:720),j0,j1,j2,j3
+       real(8) :: U(130000,3),the,fi,ct,st,cf,sf,pi
 
        pi=4.0d0*atan(1.0d0)
 

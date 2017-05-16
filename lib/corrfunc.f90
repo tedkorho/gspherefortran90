@@ -15,13 +15,15 @@ contains
        subroutine SGSCFSTD(SCFSTD,CSCF,beta,lmin,lmax)
 
 ! Generates the standard deviations for the spherical harmonics 
-! coefficients of the logarithmi! radial distance. Version 2002-12-16.
+! coefficients of the logarithmic radial distance. Version 2002-12-16.
 !
 ! Copyright (C) 2002 Karri Muinonen
 
        implicit none
-       integer l,lmin,lmax,m
-       real(8) SCFSTD(0:256,0:256),CSCF(0:256),beta
+       integer,intent(in) :: lmin,lmax
+       real(8),intent(in) :: CSCF(0:256),beta
+       real(8),intent(inout) :: SCFSTD(0:256,0:256)
+       integer :: l,m
 
        if (lmin.eq.0) then
         SCFSTD(0,0)=beta*sqrt(CSCF(0))
@@ -41,7 +43,7 @@ contains
 30       end do
 40      end do
        endif
-       end
+       end subroutine SGSCFSTD
 
 
 
@@ -54,8 +56,10 @@ contains
 ! Copyright (C) 2002 Karri Muinonen
 
        implicit none
-       integer l,lmin,lmax
-       real(8) CSCF(0:256),gam,ell,cs2d,cs4d
+       integer,intent(in) :: lmin,lmax
+       real(8),intent(in) :: CSCF(0:256)
+       real(8),intent(inout) :: gam,ell,cs2d,cs4d
+       integer :: l
 
        cs2d=0.0d0
        cs4d=0.0d0
@@ -69,7 +73,7 @@ contains
         ell=1.0d0/sqrt(-cs2d)
        endif
        gam=2.0d0*asin(0.5d0*ell)
-       end
+       end subroutine CSELL
 
 
 
@@ -81,8 +85,10 @@ contains
 ! Copyright (C) 2002 Karri Muinonen
 
        implicit none
-       integer l,lmin,lmax
-       real(8) LEGP(0:256,0:256),CSCF(0:256),xi
+       integer,intent(in) :: lmin,lmax
+       real(8),intent(in) :: CSCF(0:256)
+       real(8) :: LEGP(0:256,0:256),xi
+       integer :: l
 
        call LEGA(LEGP,xi,lmax,0)
        LEGP(0,0)=1.0d0
@@ -91,7 +97,7 @@ contains
        do 10 l=lmin,lmax
         CSLEGP=CSLEGP+LEGP(l,0)*CSCF(l)
 10     end do
-       end
+       end function CSLEGP
 
 
 
@@ -103,8 +109,11 @@ contains
 ! Copyright (C) 2002 Karri Muinonen
 
        implicit none
-       integer l,lmin,lmax
-       real(8) CSCF(0:256),nu,norm
+       integer,intent(in) :: lmin,lmax
+       real(8),intent(in) :: nu
+       real(8),intent(inout) :: CSCF(0:256)
+       integer :: l
+       real(8) :: norm
 
        do 10 l=0,lmin-1
         CSCF(l)=0.0d0
@@ -119,7 +128,7 @@ contains
        do 30 l=lmin,lmax
         CSCF(l)=CSCF(l)/norm
 30     end do
-       end
+       end subroutine CS1CF
 
 
 
@@ -131,8 +140,11 @@ contains
 ! Copyright (C) 2002 Karri Muinonen
 
        implicit none
-       integer l,lmin,lmax
-       real(8) BESISE(0:256),CSCF(0:256),ell,z,norm
+       integer,intent(in) :: lmin,lmax
+       real(8),intent(in) :: ell
+       real(8),intent(inout) :: CSCF(0:256)
+       integer :: l
+       real(8) :: BESISE(0:256),z,norm
 
        z=1.0d0/ell**2
        call BESMS(BESISE,z,lmax)
@@ -150,7 +162,7 @@ contains
        do 30 l=lmin,lmax
         CSCF(l)=CSCF(l)/norm
 30     end do
-       end
+       end subroutine CS2CF
 
 
 
@@ -162,8 +174,10 @@ contains
 ! Copyright (C) 2002 Karri Muinonen
 
        implicit none
-       integer l,ll,lmin,lmax
-       real(8) CSCF(0:256),norm
+       integer,intent(in) :: lmin, lmax
+       real(8),intent(inout) :: CSCF(0:256)
+       integer :: l,ll
+       real(8) :: norm
 
        open(unit=1, file='cscf.dat', status='old')
 
@@ -188,7 +202,7 @@ contains
        do 30 l=lmin,lmax
         CSCF(l)=CSCF(l)/norm
 30     end do
-       end
+       end subroutine CS3CF
 end module corrfunc
 
 

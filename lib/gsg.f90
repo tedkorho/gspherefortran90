@@ -23,9 +23,10 @@ contains
 ! Copyright (C) 2002 Karri Muinonen
 
        implicit none
-       integer :: nthe,nphi,lmin,lmax
-       real(8) :: X(0:180,0:360,3),MU(0:180),PHI(0:360), &
-       ACF(0:256,0:256),BCF(0:256,0:256),rmax,beta
+       integer,intent(in) :: nthe,nphi,lmin,lmax
+       real(8),intent(in) :: MU(0:180),PHI(0:360),ACF(0:256,0:256), &
+         BCF(0:256,0:256),beta
+       real(8),intent(inout) :: X(0:180,0:360,3),rmax
        integer :: j1,j2
        real(8) :: r,nu
 
@@ -53,10 +54,12 @@ contains
 ! Copyright (C) 2002 Karri Muinonen
 
        implicit none
-       integer :: IT(260000,3),nnod,ntri,lmin,lmax,j1,j2
-       real(8) :: X(130000,3),N(260000,3),MU(130000), &
-       PHI(130000),ACF(0:256,0:256),BCF(0:256,0:256), &
-       X1(3),X2(3),X3(3),rmax,beta,r,nu
+       integer,intent(in) :: nnod,ntri,lmin,lmax,IT(260000,3)
+       real(8),intent(in) :: MU(130000),ACF(0:256,0:256), &
+         BCF(0:256,0:256),PHI(130000),beta
+       real(8),intent(inout) :: X(130000,3),N(260000,3),rmax
+       integer :: j1,j2
+       real(8) :: X1(3),X2(3),X3(3),r,nu
 
 ! Node coordinates:
 
@@ -96,7 +99,7 @@ contains
 ! Copyright (C) 2002 Karri Muinonen
 
        implicit none
-       integer :: lmin,lmax
+       integer,intent(in) :: lmin,lmax
        real(8),intent(in) :: ACF(0:256,0:256),BCF(0:256,0:256), &
        mu,phi,beta 
        ! real(8) :: SGS
@@ -178,10 +181,4 @@ contains
        end subroutine SGSCF
 
 end module gsg
-
-
-
-
-
-
 
