@@ -54,9 +54,6 @@ program GSPHERE
        use discrets			! Discretization.
        use gsaxg			! Axisymmetric G-sphere generator.
        use gsg				! G-sphere generator.
-       use randev			! Random deviates.
-       use specfunc			! Special functions.
-       use voper			! Vector operations.
        
        implicit none
        integer :: nss,lmin,lmax, &
@@ -76,7 +73,6 @@ program GSPHERE
        character(32) :: infile,outfile
 
        integer :: irnd
-       ! real(8) :: RNDU
        common irnd
 
 ! Initializations:
@@ -274,19 +270,7 @@ program GSPHERE
 190     end do
         close(unit=1)
        endif
-       end
-
-
-
-! Included library subroutine and function packages:
-!
-!       include 'lib/discrets.f90'! Discretization.
-!       include 'lib/gsg.f90'     ! G-sphere generator.
-!       include 'lib/gsaxg.f90'   ! Axisymmetri! G-sphere generator.
-!       include 'lib/corrfunc.f90'! Correlation functions.
-!       include 'lib/voper.f90'   ! Vector rotations and product.
-!       include 'lib/specfunc.f90'! Special functions.
-!       include 'lib/randev.f90'  ! Random deviates.
+       end program GSPHERE
 
 
 
