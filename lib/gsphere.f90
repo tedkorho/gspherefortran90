@@ -110,7 +110,7 @@ program GSPHERE
        read (1,20) nphi     ! Discretization: number of azimuths.
        read (1,20) ntr      ! Discretization: number of triangle rows per octant.
        read (1,20) nss      ! Sphere identification number.
-       read (1,40) outfile  ! Name of the VTK output file.
+       read (1,40) outfile
 10     format (E12.6)
 20     format (I12)
 30     format (/A2/)
@@ -205,9 +205,9 @@ program GSPHERE
                      nthe,nphi,lmin,lmax)
         endif
 
-        open(unit=1, file='/output/matlabx.out')            ! Matlab
-        open(unit=2, file='/output/matlaby.out')
-        open(unit=3, file='/output/matlabz.out')
+        open(unit=1, file='output/matlabx.out')            ! Matlab
+        open(unit=2, file='output/matlaby.out')
+        open(unit=3, file='output/matlabz.out')
         do 110 j1=0,nthe
          write (1,115) (XS(j1,j2,1),j2=0,nphi)
          write (2,115) (XS(j1,j2,2),j2=0,nphi)
@@ -231,9 +231,9 @@ program GSPHERE
                      IT,nnod,ntri,lmin,lmax)
         endif
 
-        open(unit=1, file='/output/matlabx.out')           ! Matlab
-        open(unit=2, file='/output/matlaby.out')
-        open(unit=3, file='/output/matlabz.out')
+        open(unit=1, file='output/matlabx.out')           ! Matlab
+        open(unit=2, file='output/matlaby.out')
+        open(unit=3, file='output/matlabz.out')
         do 120 j2=1,3
          write (1,125) (XT(IT(j1,j2),1),j1=1,ntri)
          write (2,125) (XT(IT(j1,j2),2),j1=1,ntri)
@@ -244,7 +244,7 @@ program GSPHERE
         close(unit=2)
         close(unit=1)
 
-        open(unit=1, file='/output/idl.out')               ! IDL
+        open(unit=1, file='output/idl.out')               ! IDL
         write (1,*) nnod,ntri
         do 130 j1=1,nnod
          write (1,*) (XT(j1,j2),j2=1,3)
