@@ -25,8 +25,9 @@ contains
 
        implicit none
        integer,intent(in) :: nthe,nphi,lmin,lmax
-       real(8),intent(in) :: ACF(0:256,0:256),CEU(3),SEU(3),MU(0:180), &
-         PHI(0:360),beta
+       real(8),intent(in) :: CEU(3),SEU(3),MU(0:180), &
+         PHI(0:360),beta !,ACF(0:256,0:256)
+       real(8),intent(in),allocatable :: ACF(:,:)
        real(8),intent(inout) :: X(0:180,0:360,3),rmax
        integer :: j1,j2
        real(8) :: r,nu
@@ -50,17 +51,28 @@ contains
                          IT,nnod,ntri,lmin,lmax)
 
 ! Discrete triangle representation for a sample axisymmetri! G-sphere.
-! Version 2002-12-16.
+! Version 2017-05-17. Updated for dynamic arrays by Teo Korhonen.
 !
 ! Copyright (C) 2002 Karri Muinonen
 
        implicit none
        integer,intent(in) :: lmin,lmax,ntri,nnod
-       real(8),intent(in) :: MU(130000),PHI(130000),ACF(0:256,0:256), &
-        CEU(3),SEU(3),beta
-       real(8),intent(inout) :: X(130000,3),N(260000,3),rmax
-       integer :: IT(260000,3),j1,j2
+       integer,intent(in),allocatable :: IT(:,:)
+       real(8),intent(in) :: CEU(3),SEU(3),beta !ACF(0:256,0:256), &
+        !MU(130000),PHI(130000)
+       real(8),intent(in),allocatable :: MU(:),PHI(:),ACF(:,:)
+       real(8),intent(inout),allocatable :: X(:,:),N(:,:)
+       real(8),intent(inout) :: rmax
+       integer :: j1,j2
        real(8) :: X1(3),X2(3),X3(3),r,nu
+       
+       if(.not. (allocated(IT) .or. allocated(MU) .or. allocated(PHI))) &
+          stop 'trouble in RGSAXTD: arrays not allocated'
+         
+       if(size(mu).ne.nnod .or. size(phi).ne.nnod .or. size(IT).ne.3*ntri) stop &
+          'trouble in RGSAXTD: array length mismatch'
+       
+       allocate(X(nnod,3),N(ntri,3))
 
 ! Node coordinates:
 
@@ -102,8 +114,8 @@ contains
 
        implicit none
        integer,intent(in) :: lmin,lmax
-       real(8),intent(in) :: ACF(0:256,0:256),CEU(3),SEU(3), &
-       mu,phi,beta 
+       real(8),intent(in) :: CEU(3),SEU(3),mu,phi,beta !,ACF(0:256,0:256),
+       real(8),intent(in),allocatable :: ACF(:,:)
 
        RGSAX=exp(SGSAX(ACF,CEU,SEU,mu,phi,lmin,lmax)-0.5d0*beta**2)
        end function RGSAX
@@ -119,9 +131,11 @@ contains
 
        implicit none
        integer,intent(in) :: lmin,lmax
-       real(8),intent(in) :: ACF(0:256,0:256),mu,phi
+       real(8),intent(in) :: mu,phi !,ACF(0:256,0:256)
+       real(8),intent(in),allocatable :: ACF(:,:)
        integer :: l
-       real(8) :: CEU(3),SEU(3),LEGP(0:256,0:256),nu,cphi,sphi,r0,mu0,X(3)
+       real(8) :: CEU(3),SEU(3),nu,cphi,sphi,r0,mu0,X(3)
+       real(8),allocatable :: LEGP(:,:)
 
        if (lmax.eq.0) then
         SGSAX=ACF(0,0)
@@ -144,8 +158,8 @@ contains
        mu0=X(3)/r0
 
 ! Precomputation of Legendre polynomials:
-
-       call LEGA(LEGP,mu0,lmax,0)
+       allocate(LEGP(0:lmax,0:lmax))
+       call LEGAA(LEGP,mu0,lmax,0)
        LEGP(0,0)=1.0d0
 
 ! Sum up:
@@ -154,6 +168,9 @@ contains
        do 10 l=lmin,lmax
         SGSAX=SGSAX+LEGP(l,0)*ACF(l,0)
 10     end do
+
+       deallocate(LEGP)
+       
        end function SGSAX
 
 
@@ -170,8 +187,10 @@ contains
 
        implicit none
        integer,intent(in) :: lmin,lmax
-       real(8),intent(in) :: SCFSTD(0:256,0:256)
-       real(8),intent(inout) :: ACF(0:256,0:256),CEU(3),SEU(3)
+       ! real(8),intent(in) :: SCFSTD(0:256,0:256)
+       real(8),intent(in),allocatable :: SCFSTD(:,:)
+       real(8),intent(inout) :: CEU(3),SEU(3) !,ACF(0:256,0:256)
+       real(8),intent(inout),allocatable :: ACF(:,:)
        integer :: irnd,l
        real(8) :: alpha,gamma,rn,pi
        parameter (pi=3.1415926535898d0)

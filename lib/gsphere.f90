@@ -65,13 +65,13 @@ program GSPHERE
        integer,allocatable :: IT(:,:)
        real(8) :: XS(0:180,0:360,3), &
         MUS(0:180),PHIS(0:360)
-       real(8) :: XT(130000,3),NT(260000,3) !,&
+       !real(8) :: XT(130000,3),NT(260000,3) !,&
         ! MUT(130000),PHIT(130000)
-       real(8),allocatable :: MUT(:),PHIT(:)
+       real(8),allocatable :: MUT(:),PHIT(:),XT(:,:),NT(:,:)
 
-       real(8) :: ACF(0:256,0:256),BCF(0:256,0:256), &
-        SCFSTD(0:256,0:256),CSCF(0:256),CEU(3),SEU(3), &
-         a,sig,beta,gami,elli,nuc,rmax,pi,rd
+       real(8) :: CEU(3),SEU(3),a,sig,beta,gami,elli,nuc,rmax,pi,rd !&
+         !,SCFSTD(0:256,0:256),CSCF(0:256),ACF(0:256,0:256),BCF(0:256,0:256)
+       real(8),allocatable :: CSCF(:),SCFSTD(:,:),ACF(:,:),BCF(:,:)
        character :: ca*2
        character(32) :: infile,outfile
        
@@ -169,6 +169,7 @@ program GSPHERE
 ! Initialization of the Gaussian random sphere:
 
        beta=sqrt(log(sig**2+1.0d0))
+       allocate(CSCF(0:lmax))
        if     (cflg.eq.1) then
         call CS1CF(CSCF,nuc,lmin,lmax)
        elseif (cflg.eq.2) then
@@ -181,7 +182,8 @@ program GSPHERE
         if (CSCF(j1).lt.0.0d0) stop &
          'Trouble in GSPHERE: negative Legendre coefficient.'
 50     end do
-
+       
+       allocate(SCFSTD(0:lmax,0:lmax))
        call SGSCFSTD(SCFSTD,CSCF,beta,lmin,lmax)
 
 ! Generate a sample Gaussian sphere with identification number
@@ -189,8 +191,10 @@ program GSPHERE
 
        do 100 j0=1,nss
         if (gflg.eq.1) then
+         allocate(ACF(0:lmax,0:lmax),BCF(0:lmax,0:lmax))
          call SGSCF(ACF,BCF,SCFSTD,lmin,lmax)
         else
+         allocate(ACF(0:lmax,0:lmax))
          call SGSAXCF(ACF,CEU,SEU,SCFSTD,lmin,lmax)
         endif
 100    end do
@@ -225,13 +229,16 @@ program GSPHERE
 
 ! Triangle representation for general and axisymmetric shapes:
         allocate(IT(8*ntr**2,3),PHIT(4*ntr**2+2),MUT(4*ntr**2+2))
+        
         call TRIDS(MUT,PHIT,IT,nnod,ntri,ntr)
         if (gflg.eq.1) then
          call RGSTD(XT,NT,MUT,PHIT,ACF,BCF,rmax,beta, &
           IT,nnod,ntri,lmin,lmax)
+         deallocate(ACF,BCF)
         else
          call RGSAXTD(XT,NT,MUT,PHIT,ACF,CEU,SEU,rmax,beta, &
                      IT,nnod,ntri,lmin,lmax)
+         deallocate(ACF)
         endif
 
         open(unit=1, file='output/matlabx.out')           ! Matlab

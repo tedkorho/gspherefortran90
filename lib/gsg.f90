@@ -26,8 +26,9 @@ contains
 
        implicit none
        integer,intent(in) :: nthe,nphi,lmin,lmax
-       real(8),intent(in) :: MU(0:180),PHI(0:360),ACF(0:256,0:256), &
-         BCF(0:256,0:256),beta
+       real(8),intent(in) :: MU(0:180),PHI(0:360),beta !,ACF(0:256,0:256), &
+         !BCF(0:256,0:256)
+       real(8),intent(in),allocatable :: ACF(:,:),BCF(:,:)
        real(8),intent(inout) :: X(0:180,0:360,3),rmax
        integer :: j1,j2
        real(8) :: r,nu
@@ -51,22 +52,29 @@ contains
                        IT,nnod,ntri,lmin,lmax)
 
 ! Discrete triangle representation for a sample G-sphere.
-! Version 2002-12-16.
+! Version 2017-05-17. Updated with dynamic arrays by Teo Korhonen.
 !
 ! Copyright (C) 2002 Karri Muinonen
 
        implicit none
-       integer,intent(in) :: nnod,ntri,lmin,lmax !,IT(260000,3)
-       integer,intent(in),allocatable :: IT(:,:)
-       real(8),intent(in) :: ACF(0:256,0:256), &
-         BCF(0:256,0:256),beta!,MU(130000),PHI(130000)
+       integer,intent(in) :: nnod,ntri,lmin,lmax
+       integer,intent(in),allocatable :: IT(:,:)!,ACF(:,:),BCF(:,:)
+       real(8),intent(in) :: beta !,ACF(0:256,0:256), &
+         !BCF(0:256,0:256)
+       real(8),intent(in),allocatable :: ACF(:,:),BCF(:,:)
        real(8),intent(in),allocatable :: MU(:),PHI(:)
-       real(8),intent(inout) :: X(130000,3),N(260000,3),rmax
+       real(8),intent(inout),allocatable :: X(:,:),N(:,:)
+       real(8),intent(inout) :: rmax
        integer :: j1,j2
        real(8) :: X1(3),X2(3),X3(3),r,nu
        
        if(.not. (allocated(IT) .or. allocated(MU) .or. allocated(PHI))) &
           stop 'trouble in RGSTD: arrays not allocated'
+         
+       if(size(mu).ne.nnod .or. size(phi).ne.nnod .or. size(IT).ne.3*ntri) stop &
+          'RGSTD: array length mismatch'
+       
+       allocate(X(nnod,3),N(ntri,3))
 
 ! Node coordinates:
 
@@ -107,8 +115,8 @@ contains
 
        implicit none
        integer,intent(in) :: lmin,lmax
-       real(8),intent(in) :: ACF(0:256,0:256),BCF(0:256,0:256), &
-       mu,phi,beta 
+       real(8),intent(in) :: mu,phi,beta !,ACF(0:256,0:256),BCF(0:256,0:256)
+       real(8),intent(in),allocatable :: ACF(:,:),BCF(:,:)
 
        RGS=exp(SGS(ACF,BCF,mu,phi,lmin,lmax)-0.5d0*beta**2)
        end function RGS
@@ -124,10 +132,12 @@ contains
 
        implicit none
        integer,intent(in) :: lmin,lmax
-       real(8),intent(in) :: ACF(0:256,0:256),BCF(0:256,0:256), &
-       mu,phi 
+       real(8),intent(in) :: mu,phi !ACF(0:256,0:256),BCF(0:256,0:256)
+       real(8),intent(in),allocatable :: ACF(:,:),BCF(:,:)
+
        integer :: l,m
-       real(8) :: LEGP(0:256,0:256),CPHI(256),SPHI(256)
+       real(8) :: CPHI(256),SPHI(256)
+       real(8),allocatable :: LEGP(:,:)
 
        if (lmax.eq.0) then
         SGS=ACF(0,0)
@@ -135,10 +145,10 @@ contains
        endif
 
 ! Precomputation of sines, cosines, and associated Legendre functions:
-
-       call LEGA(LEGP,mu,lmax,0)
+       allocate(LEGP(0:lmax,0:lmax))
+       call LEGAA(LEGP,mu,lmax,0)
        do 10 m=1,lmax
-        call LEGA(LEGP,mu,lmax,m)
+        call LEGAA(LEGP,mu,lmax,m)
         CPHI(m)=cos(m*phi)
         SPHI(m)=sin(m*phi)
 10     end do
@@ -156,6 +166,9 @@ contains
          LEGP(l,m)*(ACF(l,m)*CPHI(m)+BCF(l,m)*SPHI(m))
 30      end do
 40     end do
+       
+       deallocate(LEGP)
+       
        end function SGS
 
 
@@ -168,8 +181,9 @@ contains
 
        implicit none
        integer,intent(in) :: lmin,lmax
-       real(8),intent(in) :: SCFSTD(0:256,0:256)
-       real(8),intent(inout) :: ACF(0:256,0:256),BCF(0:256,0:256)
+       real(8),intent(in),allocatable :: SCFSTD(:,:)
+       !real(8),intent(inout) :: ACF(0:256,0:256),BCF(0:256,0:256)
+       real(8),intent(inout),allocatable :: ACF(:,:),BCF(:,:)
        integer :: l,m
        real(8) :: rn
 

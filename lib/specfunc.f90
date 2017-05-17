@@ -6,7 +6,9 @@ module specfunc
 ! BESJ1A: Bessel function  J_1
 ! BESMS:  modified spherical Bessel functions multiplied by exponential
 ! LEGA:   associated Legendre functions
-! SPHGEN: generalized spherical functions 
+! LEGAA:  associated Legendre functions for dynamically allocated arrays
+! SPHGEN: generalized spherical functions
+! SPHGENA:generalized spherical functions for dynamically allocated arrays
 ! GAMLN:  logarithmi! Gamma function 
 ! FACTI:  factorial function
 
@@ -135,6 +137,7 @@ contains
        integer,intent(in) :: lmax,m
        real(8),intent(in) :: x
        real(8),intent(inout) :: LEGP(0:256,0:256)
+       !real(8),intent(inout),allocatable :: LEGP(:,:)
        integer :: l
        double complex :: GSP(0:256,0:256,-2:2),i
 
@@ -161,6 +164,48 @@ contains
         sqrt(FACTI(l+m)/FACTI(l-m))*GSP(l,m,0))
 10     end do
        end subroutine LEGA
+       
+       
+       
+       subroutine LEGAA(LEGP,x,lmax,m)
+
+! Computes associated Legendre functions from degree l=m
+! up to l=lmax. Uses dynamically allocated arrays.
+! Version 2017-05-17, Teo Korhonen.
+!
+! Copyright (C) 2002 Karri Muinonen
+
+       implicit none
+       integer,intent(in) :: lmax,m
+       real(8),intent(in) :: x
+       real(8),intent(inout),allocatable :: LEGP(:,:)
+       integer :: l
+       double complex :: i
+       double complex,allocatable :: GSP(:,:,:)
+
+       i=dcmplx(0.0d0,1.0d0)
+
+! Check degree, orders, and argument:
+
+       if (lmax.lt.0) &
+       stop 'Trouble in LEGA: degree negative.'
+
+       if (m.gt.lmax .or. m.lt.0) &
+       stop 'Trouble in LEGA: order out of range.'
+
+       if (abs(x).gt.1.0d0) &
+       stop 'Trouble in LEGA: argument out of range.'
+
+! Compute associated Legendre functions with the help of
+! the generalized spherical functions:
+       allocate(GSP(0:lmax,0:lmax,-2:2))
+       call SPHGENA(GSP,x,lmax,m,0)
+
+       do 10 l=m,lmax
+        LEGP(l,m)=dreal(i**m* &
+        sqrt(FACTI(l+m)/FACTI(l-m))*GSP(l,m,0))
+10     end do
+       end subroutine LEGAA
 
 
 
@@ -238,6 +283,84 @@ contains
 
        endif
        end subroutine SPHGEN
+       
+       
+
+       subroutine SPHGENA(GSP,x,lmax,m1,m2)
+
+! Computes generalized spherical functions from degree max(abs(m1),abs(m2))
+! up to lmax. Uses dynamically allocated arrays. Version 2017-05-17. Teo Korhonen
+!
+! Copyright (C) 2002 Karri Muinonen
+
+       implicit none
+       integer,intent(in) :: lmax,m1,m2
+       real(8),intent(in) :: x
+       double complex,intent(inout),allocatable :: GSP(:,:,:)
+       integer :: l,m0,m12,p12
+       double complex :: i
+       
+
+       i=dcmplx(0.0d0,1.0d0)
+
+! Check degree, orders, and argument:
+
+       if (lmax.lt.0) &
+       stop 'Trouble in SPHGEN: degree negative.'
+
+       if (abs(m1).gt.lmax .or. abs(m2).gt.min(2,lmax) .or. m1.lt.0) &
+       stop 'Trouble in SPHGEN: order out of range.'
+
+       if (abs(x).gt.1.0d0) &
+       stop 'Trouble in SPHGEN: argument out of range.'
+
+! Compute generalized spherical functions:
+   
+       m0=max(abs(m1),abs(m2))
+       m12=abs(m1-m2)
+       p12=abs(m1+m2)
+
+       if (m0.gt.0) then
+
+        if (m12.ne.0 .and. p12.ne.0) then
+         GSP(m0,m1,m2)=(-i)**m12/2.0d0**m0* &
+         sqrt(FACTI(2*m0)/(FACTI(m12)*FACTI(p12))* &
+         (1.0d0-x)**m12*(1.0d0+x)**p12)
+        elseif (m12.eq.0) then
+         GSP(m0,m1,m2)=1.0d0/2.0d0**m0* &
+        sqrt(FACTI(2*m0)/FACTI(p12)*(1.0d0+x)**p12)
+        else
+         GSP(m0,m1,m2)=(-i)**m12/2.0d0**m0* &
+         sqrt(FACTI(2*m0)/FACTI(m12)*(1.0d0-x)**m12)
+        endif
+
+        if (m0.eq.lmax) return
+
+        GSP(m0+1,m1,m2)=(2*m0+1)*(m0*(m0+1)*x-m1*m2)*GSP(m0,m1,m2)/ &
+        (m0*sqrt(dble((m0+1)**2-m2**2))*sqrt(dble((m0+1)**2-m1**2)))
+
+        if (m0+1.eq.lmax) return
+
+        do 10 l=m0+1,lmax-1
+         GSP(l+1,m1,m2)=((2*l+1)*(l*(l+1)*x-m1*m2)*GSP(l,m1,m2) &
+         -(l+1)*sqrt(dble((l**2-m1**2)*(l**2-m2**2)))*GSP(l-1,m1,m2))/ &
+         (l*sqrt(dble(((l+1)**2-m1**2)*((l+1)**2-m2**2))))
+10      end do
+
+       else
+
+        GSP(0,0,0)=1.0d0
+        if (lmax.eq.0) return
+        GSP(1,0,0)=x
+        if (lmax.eq.1) return
+
+        do 20 l=m0+1,lmax-1
+         GSP(l+1,0,0)=((2*l+1)*x*GSP(l,0,0)-l*GSP(l-1,0,0))/(l+1)
+20      end do
+
+       endif
+       end subroutine SPHGENA
+
 
 
 
