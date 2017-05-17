@@ -20,14 +20,13 @@ contains
                         nthe,nphi,lmin,lmax)
 
 ! Discrete spherical-coordinate representation for a sample G-sphere.
-! Version 2002-12-16.
+! Version 2002-12-16. Updated for dynamic arrays by Teo Korhonen.
 !
 ! Copyright (C) 2002 Karri Muinonen
 
        implicit none
        integer,intent(in) :: nthe,nphi,lmin,lmax
-       real(8),intent(in) :: MU(0:180),PHI(0:360),beta !,ACF(0:256,0:256), &
-         !BCF(0:256,0:256)
+       real(8),intent(in) :: MU(0:180),PHI(0:360),beta
        real(8),intent(in),allocatable :: ACF(:,:),BCF(:,:)
        real(8),intent(inout) :: X(0:180,0:360,3),rmax
        integer :: j1,j2
@@ -58,13 +57,11 @@ contains
 
        implicit none
        integer,intent(in) :: nnod,ntri,lmin,lmax
-       integer,intent(in),allocatable :: IT(:,:)!,ACF(:,:),BCF(:,:)
-       real(8),intent(in) :: beta !,ACF(0:256,0:256), &
-         !BCF(0:256,0:256)
-       real(8),intent(in),allocatable :: ACF(:,:),BCF(:,:)
-       real(8),intent(in),allocatable :: MU(:),PHI(:)
-       real(8),intent(inout),allocatable :: X(:,:),N(:,:)
+       integer,intent(in),allocatable :: IT(:,:)
+       real(8),intent(in) :: beta
+       real(8),intent(in),allocatable :: ACF(:,:),BCF(:,:),MU(:),PHI(:)
        real(8),intent(inout) :: rmax
+       real(8),intent(inout),allocatable :: X(:,:),N(:,:)
        integer :: j1,j2
        real(8) :: X1(3),X2(3),X3(3),r,nu
        
@@ -109,13 +106,13 @@ contains
        real(8) function RGS(ACF,BCF,mu,phi,beta,lmin,lmax)
 
 ! Radial distance in a given direction for a sample G-sphere.
-! Version 2002-12-16.
+! Version 2002-12-16. Updated for dynamic arrays by Teo Korhonen.
 !
 ! Copyright (C) 2002 Karri Muinonen
 
        implicit none
        integer,intent(in) :: lmin,lmax
-       real(8),intent(in) :: mu,phi,beta !,ACF(0:256,0:256),BCF(0:256,0:256)
+       real(8),intent(in) :: mu,phi,beta
        real(8),intent(in),allocatable :: ACF(:,:),BCF(:,:)
 
        RGS=exp(SGS(ACF,BCF,mu,phi,lmin,lmax)-0.5d0*beta**2)
@@ -127,12 +124,13 @@ contains
 
 ! Logarithmi! radial distance in a given direction for a sample G-sphere.
 ! Version 2002-12-16.
+! Updated for dynamic arrays by Teo Korhonen.
 !
 ! Copyright (C) 2002 Karri Muinonen
 
        implicit none
        integer,intent(in) :: lmin,lmax
-       real(8),intent(in) :: mu,phi !ACF(0:256,0:256),BCF(0:256,0:256)
+       real(8),intent(in) :: mu,phi
        real(8),intent(in),allocatable :: ACF(:,:),BCF(:,:)
 
        integer :: l,m
@@ -176,13 +174,13 @@ contains
 
 ! Generates the sample spherical harmonics coefficients for the 
 ! logarithmi! radial distance of the G-sphere. Version 2002-12-16.
+! Updated for dynamic arrays by Teo Korhonen.
 !
 ! Copyright (C) 2002 Karri Muinonen
 
        implicit none
        integer,intent(in) :: lmin,lmax
        real(8),intent(in),allocatable :: SCFSTD(:,:)
-       !real(8),intent(inout) :: ACF(0:256,0:256),BCF(0:256,0:256)
        real(8),intent(inout),allocatable :: ACF(:,:),BCF(:,:)
        integer :: l,m
        real(8) :: rn

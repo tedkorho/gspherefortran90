@@ -23,9 +23,8 @@ contains
 
        implicit none
        integer,intent(in) :: lmin,lmax
-       real(8),intent(in) :: beta !, CSCF(0:256)
+       real(8),intent(in) :: beta
        real(8),intent(in),allocatable :: CSCF(:)
-       ! real(8),intent(inout) :: SCFSTD(0:256,0:256)
        real(8),intent(inout),allocatable :: SCFSTD(:,:)
        integer :: l,m
        
@@ -64,7 +63,6 @@ contains
 
        implicit none
        integer,intent(in) :: lmin,lmax
-       ! real(8),intent(in) :: CSCF(0:256)
        real(8),intent(in),allocatable :: CSCF(:)
        real(8),intent(inout) :: gam,ell,cs2d,cs4d
        integer :: l
@@ -94,15 +92,14 @@ contains
 
        implicit none
        integer,intent(in) :: lmin,lmax
-       ! real(8),intent(in) :: CSCF(0:256)
        real(8),intent(in),allocatable :: CSCF(:)
-       real(8) :: LEGP(0:256,0:256),xi
-       ! real(8),allocatable :: LEGP(:,:)
+       real(8) :: xi
+       real(8),allocatable :: LEGP(:,:)
        integer :: l
        
-       ! allocate(LEGP(0:lmax,0:lmax))
+       allocate(LEGP(0:lmax,0:lmax))
        
-       call LEGA(LEGP,xi,lmax,0)
+       call LEGAA(LEGP,xi,lmax,0)
        LEGP(0,0)=1.0d0
 
        CSLEGP=0.0d0
@@ -123,7 +120,6 @@ contains
        implicit none
        integer,intent(in) :: lmin,lmax
        real(8),intent(in) :: nu
-       ! real(8),intent(inout) :: CSCF(0:256)
        real(8),intent(inout),allocatable :: CSCF(:)
        integer :: l
        real(8) :: norm
@@ -155,14 +151,15 @@ contains
        implicit none
        integer,intent(in) :: lmin,lmax
        real(8),intent(in) :: ell
-       ! real(8),intent(inout) :: CSCF(0:256)
        real(8),intent(inout),allocatable :: CSCF(:)
        integer :: l
-       real(8) :: BESISE(0:256),z,norm
-       ! real(8),allocatable :: BESISE(:)
-
+       real(8) :: z,norm
+       real(8),allocatable :: BESISE(:)
+       
+       allocate(BESISE(0:lmax))
+       
        z=1.0d0/ell**2
-       call BESMS(BESISE,z,lmax)
+       call BESMSA(BESISE,z,lmax)
 
        do 10 l=0,lmin-1
         CSCF(l)=0.0d0

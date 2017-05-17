@@ -26,7 +26,7 @@ contains
        implicit none
        integer,intent(in) :: nthe,nphi,lmin,lmax
        real(8),intent(in) :: CEU(3),SEU(3),MU(0:180), &
-         PHI(0:360),beta !,ACF(0:256,0:256)
+         PHI(0:360),beta
        real(8),intent(in),allocatable :: ACF(:,:)
        real(8),intent(inout) :: X(0:180,0:360,3),rmax
        integer :: j1,j2
@@ -58,8 +58,7 @@ contains
        implicit none
        integer,intent(in) :: lmin,lmax,ntri,nnod
        integer,intent(in),allocatable :: IT(:,:)
-       real(8),intent(in) :: CEU(3),SEU(3),beta !ACF(0:256,0:256), &
-        !MU(130000),PHI(130000)
+       real(8),intent(in) :: CEU(3),SEU(3),beta
        real(8),intent(in),allocatable :: MU(:),PHI(:),ACF(:,:)
        real(8),intent(inout),allocatable :: X(:,:),N(:,:)
        real(8),intent(inout) :: rmax
@@ -108,13 +107,13 @@ contains
                                       lmin,lmax)
 
 ! Radial distance in a given direction for a sample axisymmetric G-sphere.
-! Version 2002-12-16.
+! Version 2002-12-16. Updated for dynamic arrays by Teo Korhonen.
 !
 ! Copyright (C) 2002 Karri Muinonen
 
        implicit none
        integer,intent(in) :: lmin,lmax
-       real(8),intent(in) :: CEU(3),SEU(3),mu,phi,beta !,ACF(0:256,0:256),
+       real(8),intent(in) :: CEU(3),SEU(3),mu,phi,beta
        real(8),intent(in),allocatable :: ACF(:,:)
 
        RGSAX=exp(SGSAX(ACF,CEU,SEU,mu,phi,lmin,lmax)-0.5d0*beta**2)
@@ -126,12 +125,13 @@ contains
 
 ! Logarithmic radial distance in a given direction for a sample 
 ! axisymmetric G-sphere. Version 2003-11-07, revised from Version 2002-12-16.
+! Updated for dynamic arrays by Teo Korhonen.
 !
 ! Copyright (C) 2002, 2003 Karri Muinonen
 
        implicit none
        integer,intent(in) :: lmin,lmax
-       real(8),intent(in) :: mu,phi !,ACF(0:256,0:256)
+       real(8),intent(in) :: mu,phi
        real(8),intent(in),allocatable :: ACF(:,:)
        integer :: l
        real(8) :: CEU(3),SEU(3),nu,cphi,sphi,r0,mu0,X(3)
@@ -182,14 +182,14 @@ contains
 ! the axisymmetri! G-sphere. Note that fixed orientation is obtained by
 ! using the Euler angle sines and cosines that are currently commented out.  
 ! Version 2002-11-07, revised from Version 2002-12-16.
+! Updated for dynamic arrays by Teo Korhonen.
 !
 ! Copyright (C) 2002, 2003 Karri Muinonen
 
        implicit none
        integer,intent(in) :: lmin,lmax
-       ! real(8),intent(in) :: SCFSTD(0:256,0:256)
        real(8),intent(in),allocatable :: SCFSTD(:,:)
-       real(8),intent(inout) :: CEU(3),SEU(3) !,ACF(0:256,0:256)
+       real(8),intent(inout) :: CEU(3),SEU(3)
        real(8),intent(inout),allocatable :: ACF(:,:)
        integer :: irnd,l
        real(8) :: alpha,gamma,rn,pi

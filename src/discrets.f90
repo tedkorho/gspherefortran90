@@ -4,6 +4,8 @@ module discrets
 ! SPHDS: spherical coordinates 
 ! TRIDS: triangles
 
+integer,parameter :: rk=8
+
 contains
 
 
@@ -16,9 +18,9 @@ contains
 
        implicit none
        integer,intent(in) :: nthe,nphi
-       real(8),intent(inout) :: MU(0:180),PHI(0:360)
+       real(rk),intent(inout) :: MU(0:180),PHI(0:360)
        integer :: j1,j2
-       real(8) :: dthe,dphi,pi
+       real(rk) :: dthe,dphi,pi
 
        pi=4.0d0*atan(1.0d0)
        dthe=pi/nthe
@@ -45,15 +47,16 @@ contains
 
        implicit none
        integer,intent(in) :: ntr
-       integer,intent(inout) :: nnod,ntri!,IT(260000,3)  ! IT into dyn-array
+       integer,intent(inout) :: nnod,ntri
        integer,intent(inout),allocatable :: IT(:,:)
-       !real(8),intent(inout) :: MU(130000),PHI(130000)  ! MU,PHI into dyn-array
-       real(8),intent(inout),allocatable :: MU(:),PHI(:)
+       real(rk),intent(inout),allocatable :: MU(:),PHI(:)
        integer :: NJJ(0:360,0:720),j0,j1,j2,j3          ! NJJ maybe into dyn-array
-       real(8) :: U(130000,3),the,fi,ct,st,cf,sf,pi     ! U into dyn-array
-       !real(8) :: U(:,3)
+       real(rk) :: the,fi,ct,st,cf,sf,pi
+       !real(rk),allocatable :: U(:,:) !U uses max (130000,3)
 
        pi=4.0d0*atan(1.0d0)
+       
+       !allocate(U(4*ntr**2+2,3))
 
 ! NODES:
 
@@ -62,9 +65,9 @@ contains
           stop 'trouble in TRIDS: arrays not allocated'
        
        nnod=1
-       U(nnod,1)=0.0d0
-       U(nnod,2)=0.0d0
-       U(nnod,3)=1.0d0
+       !U(nnod,1)=0.0d0
+       !U(nnod,2)=0.0d0
+       !U(nnod,3)=1.0d0
        MU(nnod)=1.0d0
        PHI(nnod)=0.0d0
        NJJ(0,0)=nnod
@@ -80,9 +83,9 @@ contains
          sf=sin(fi)
 
          nnod=nnod+1
-         U(nnod,1)=st*cf
-         U(nnod,2)=st*sf
-         U(nnod,3)=ct
+         !U(nnod,1)=st*cf
+         !U(nnod,2)=st*sf
+         !U(nnod,3)=ct
          MU(nnod)=ct
          PHI(nnod)=fi
          NJJ(j1,j2)=nnod
@@ -103,9 +106,9 @@ contains
          sf=sin(fi)
 
          nnod=nnod+1
-         U(nnod,1)=st*cf
-         U(nnod,2)=st*sf
-         U(nnod,3)=ct
+         !U(nnod,1)=st*cf
+         !U(nnod,2)=st*sf
+         !U(nnod,3)=ct
          MU(nnod)=ct
          PHI(nnod)=fi
          NJJ(2*ntr-j1,j2)=nnod
@@ -114,9 +117,9 @@ contains
 40     end do
 
        nnod=nnod+1
-       U(nnod,1)=0.0d0
-       U(nnod,2)=0.0d0
-       U(nnod,3)=-1.0d0
+       !U(nnod,1)=0.0d0
+       !U(nnod,2)=0.0d0
+       !U(nnod,3)=-1.0d0
        MU(nnod)=-1.0d0
        PHI(nnod)=0.0d0
        NJJ(2*ntr,0)=nnod
@@ -135,13 +138,11 @@ contains
          j0=(j3-1)*j1
          
          ntri=ntri+1
-         ! reallocate IT
          IT(ntri,1)=NJJ(j1-1,j0-(j3-1))
          IT(ntri,2)=NJJ(j1,  j0       )
          IT(ntri,3)=NJJ(j1,  j0+1     )
                             
          do 50 j2=j0+1,j0+j1-1
-          ! reallocate IT x2
           ntri=ntri+1
           IT(ntri,1)=NJJ(j1,  j2         )
           IT(ntri,2)=NJJ(j1-1,j2  -(j3-1))
@@ -162,14 +163,12 @@ contains
          j0=(j3-1)*(2*ntr-j1)
          
          ntri=ntri+1
-         ! reallocate IT
          IT(ntri,1)=NJJ(j1,  j0         )
          IT(ntri,2)=NJJ(j1-1,j0+1+(j3-1))
          IT(ntri,3)=NJJ(j1-1,j0  +(j3-1))
                             
          do 80 j2=j0+1,j0+(2*ntr-j1)
           ntri=ntri+1
-          ! reallocate IT x2
           IT(ntri,1)=NJJ(j1,  j2         )
           IT(ntri,2)=NJJ(j1-1,j2+(j3-1)  )
           IT(ntri,3)=NJJ(j1,  j2-1       )

@@ -58,20 +58,19 @@ program GSPHERE
        use gsg          ! G-sphere generator.
        
        implicit none
+       
+       
        integer :: nss,lmin,lmax, &
        j0,j1,j2,gflg,dflg,cflg
 
-       integer :: nthe,nphi,ntr,nnod,ntri!,IT(260000,3)
+       integer :: nthe,nphi,ntr,nnod,ntri
        integer,allocatable :: IT(:,:)
-       real(8) :: XS(0:180,0:360,3), &
+       real(rk) :: XS(0:180,0:360,3), &
         MUS(0:180),PHIS(0:360)
-       !real(8) :: XT(130000,3),NT(260000,3) !,&
-        ! MUT(130000),PHIT(130000)
-       real(8),allocatable :: MUT(:),PHIT(:),XT(:,:),NT(:,:)
+       real(rk),allocatable :: MUT(:),PHIT(:),XT(:,:),NT(:,:)
 
-       real(8) :: CEU(3),SEU(3),a,sig,beta,gami,elli,nuc,rmax,pi,rd !&
-         !,SCFSTD(0:256,0:256),CSCF(0:256),ACF(0:256,0:256),BCF(0:256,0:256)
-       real(8),allocatable :: CSCF(:),SCFSTD(:,:),ACF(:,:),BCF(:,:)
+       real(rk) :: CEU(3),SEU(3),a,sig,beta,gami,elli,nuc,rmax,pi,rd
+       real(rk),allocatable :: CSCF(:),SCFSTD(:,:),ACF(:,:),BCF(:,:)
        character :: ca*2
        character(32) :: infile,outfile
        
@@ -228,6 +227,7 @@ program GSPHERE
        else
 
 ! Triangle representation for general and axisymmetric shapes:
+        
         allocate(IT(8*ntr**2,3),PHIT(4*ntr**2+2),MUT(4*ntr**2+2))
         
         call TRIDS(MUT,PHIT,IT,nnod,ntri,ntr)
@@ -283,6 +283,7 @@ program GSPHERE
          write (1,*) 3,(IT(j1,j2)-1,j2=1,3)
 190     end do
         close(unit=1)
+        
         deallocate(IT,MUT,PHIT)
        endif
        end program GSPHERE

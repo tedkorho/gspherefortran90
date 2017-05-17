@@ -89,6 +89,7 @@ contains
        integer,intent(in) :: n
        real(8),intent(in) :: x
        real(8),intent(inout) :: BESISE(0:256)
+       ! real(8),intent(inout) :: BESISE(:)
        integer :: j1,nini
        real(8) :: b,b0,b1,renorm
       
@@ -123,6 +124,55 @@ contains
         BESISE(j1)=renorm*BESISE(j1)
 30     end do
        end subroutine BESMS
+       
+       
+       
+       subroutine BESMSA(BESISE,x,n)
+
+! Generates modified spherical Bessel functions multiplied by an
+! exponential: i_0(x)*exp(-x),...,i_n(x)*exp(-x). Version 2002-12-16.
+! Uses dynamically allocated arrays.
+!
+! Copyright (C) 2002 Karri Muinonen
+
+       implicit none
+       integer,intent(in) :: n
+       real(8),intent(in) :: x
+       real(8),intent(inout),allocatable :: BESISE(:)
+       integer :: j1,nini
+       real(8) :: b,b0,b1,renorm
+      
+! Orders n=0 and n=1:
+
+       if (n.le.1) then
+        BESISE(0)=exp(-x)*sinh(x)/x
+        BESISE(1)=exp(-x)*(-sinh(x)/x**2)+cosh(x)/x
+        return
+       endif
+
+! Downward recurrence:
+
+       nini=max(n+4,int(1.5d0*x))
+       b1=0.0d0
+       b0=exp(-x)*2.0d0*x
+       do 10 j1=nini,n,-1
+        b=(2*j1+1)*b0/x+b1
+        b1=b0
+        b0=b
+10     end do
+       BESISE(n)=b1
+       BESISE(n-1)=b0
+       do 20 j1=n,2,-1
+        BESISE(j1-2)=(2*j1-1)*BESISE(j1-1)/x+BESISE(j1)
+20     end do
+
+! Renormalization:
+
+       renorm=exp(-x)*(sinh(x)/x)/BESISE(0)
+       do 30 j1=0,n
+        BESISE(j1)=renorm*BESISE(j1)
+30     end do
+       end subroutine BESMSA
 
 
 
