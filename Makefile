@@ -1,15 +1,12 @@
-LOWLEVELMODS = 	lib/specfunc.f90 lib/randev.f90 lib/voper.f90
-MODS = 		lib/corrfunc.f90 lib/discrets.f90 lib/gsaxg.f90 lib/gsg.f90
-MAINPROG =	lib/gsphere.f90
+LOWLEVELMODS = 	src/specfunc.f90 src/randev.f90 src/voper.f90
+MODS = 		src/corrfunc.f90 src/discrets.f90 src/gsaxg.f90 src/gsg.f90
+MAINPROG =	src/gsphere.f90
 OBJS =		gsphere.o discrets.o corrfunc.o gsg.o gsaxg.o randev.o specfunc.o voper.o
 MODFILES =	discrets.mod corrfunc.mod gsaxg.mod gsg.mod randev.mod specfunc.mod voper.mod
 
 all: main
 
-clean:
-	rm $(OBJS) $(MODFILES)
-
-main: lib/gsphere.f90 lib/corrfunc.f90 lib/discrets.f90 lib/gsg.f90 lib/gsaxg.f90 lib/randev.f90 lib/specfunc.f90 lib/voper.f90
+main: $(MAINPROG) $(MODS) $(LOWLEVELMODS)
 	gfortran -c $(LOWLEVELMODS) -Wall
 	gfortran -c $(MODS) -Wall
 	gfortran -c $(MAINPROG) -Wall
