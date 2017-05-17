@@ -6,7 +6,9 @@ module gsaxg
 ! RGSAX:   radial distance
 ! SGSAX:   logarithm of radial distance
 ! SGSAXCF: spherical harmonics coefficient and random orientation generator
-        ! Modules used:
+       !
+       ! Required modules:
+       !
         use randev      ! Random deviates
         use voper       ! Vector operations
         use specfunc    ! Special functions

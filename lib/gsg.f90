@@ -6,10 +6,12 @@ module gsg
 ! RGS:     radial distance
 ! SGS:     logarithm of radial distance
 ! SGSCF:   spherical harmonics coefficient generation
-        ! Modules used:
+       !
+       ! Required modules:
+       !
         use specfunc    ! Special functions.
         use randev      ! Random deviates.
-        use voper       ! Vector operations
+        use voper       ! Vector operations.
 
 contains
 
@@ -54,12 +56,17 @@ contains
 ! Copyright (C) 2002 Karri Muinonen
 
        implicit none
-       integer,intent(in) :: nnod,ntri,lmin,lmax,IT(260000,3)
-       real(8),intent(in) :: MU(130000),ACF(0:256,0:256), &
-         BCF(0:256,0:256),PHI(130000),beta
+       integer,intent(in) :: nnod,ntri,lmin,lmax !,IT(260000,3)
+       integer,intent(in),allocatable :: IT(:,:)
+       real(8),intent(in) :: ACF(0:256,0:256), &
+         BCF(0:256,0:256),beta!,MU(130000),PHI(130000)
+       real(8),intent(in),allocatable :: MU(:),PHI(:)
        real(8),intent(inout) :: X(130000,3),N(260000,3),rmax
        integer :: j1,j2
        real(8) :: X1(3),X2(3),X3(3),r,nu
+       
+       if(.not. (allocated(IT) .or. allocated(MU) .or. allocated(PHI))) &
+          stop 'trouble in RGSTD: arrays not allocated'
 
 ! Node coordinates:
 

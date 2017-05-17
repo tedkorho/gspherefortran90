@@ -47,10 +47,10 @@ program GSPHERE
 ! Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 !
 ! This version of GSPHERE has been updated and refactored in 2017 to 
-! Fortran 2003+ spec from the original F77 version by Teo Korhonen.
+! modern Fortran standard from the original F77 version by Teo Korhonen.
 !
        !
-       ! Included modules:
+       ! Required modules:
        !
        use corrfunc     ! Correlation functions.
        use discrets     ! Discretization.
@@ -61,19 +61,21 @@ program GSPHERE
        integer :: nss,lmin,lmax, &
        j0,j1,j2,gflg,dflg,cflg
 
-       integer :: IT(260000,3),nthe,nphi,ntr,nnod,ntri
+       integer :: nthe,nphi,ntr,nnod,ntri!,IT(260000,3)
+       integer,allocatable :: IT(:,:)
        real(8) :: XS(0:180,0:360,3), &
         MUS(0:180),PHIS(0:360)
-       real(8) :: XT(130000,3),NT(260000,3), &
-        MUT(130000),PHIT(130000)
+       real(8) :: XT(130000,3),NT(260000,3) !,&
+        ! MUT(130000),PHIT(130000)
+       real(8),allocatable :: MUT(:),PHIT(:)
 
        real(8) :: ACF(0:256,0:256),BCF(0:256,0:256), &
-        SCFSTD(0:256,0:256),CSCF(0:256), &
-         CEU(3),SEU(3),a,sig,beta,gami,elli, &
-          nuc,rmax,pi,rd
+        SCFSTD(0:256,0:256),CSCF(0:256),CEU(3),SEU(3), &
+         a,sig,beta,gami,elli,nuc,rmax,pi,rd
        character :: ca*2
        character(32) :: infile,outfile
-
+       
+       logical :: there
        integer :: irnd
        common irnd
 
@@ -89,6 +91,9 @@ program GSPHERE
 ! Input file specified in command line argument:
 
        call getarg(1, infile)
+       inquire(file=infile,exist=there)
+       if (.not. there) stop &
+        'Trouble in GSPHERE: no input file specified in argument!'
 
 ! Input parameters from option file:
 
@@ -116,7 +121,7 @@ program GSPHERE
        close(unit=1)
 
 ! Input check:
-
+       
        if (gflg.ne.1 .and. gflg.ne.2) stop &
         'Trouble in GSPHERE: general or axisymmetri! spheres.'
        if (dflg.ne.1 .and. dflg.ne.2) stop &
@@ -192,7 +197,7 @@ program GSPHERE
        
        if (dflg.eq.1) then
 
-! Spherical-coordinate representation for general and axisymmetri! shapes:
+! Spherical-coordinate representation for general and axisymmetric shapes:
 
         call SPHDS(MUS,PHIS,nthe,nphi)
         if (gflg.eq.1) then
@@ -218,8 +223,8 @@ program GSPHERE
 
        else
 
-! Triangle representation for general and axisymmetri! shapes:
-
+! Triangle representation for general and axisymmetric shapes:
+        allocate(IT(8*ntr**2,3),PHIT(4*ntr**2+2),MUT(4*ntr**2+2))
         call TRIDS(MUT,PHIT,IT,nnod,ntri,ntr)
         if (gflg.eq.1) then
          call RGSTD(XT,NT,MUT,PHIT,ACF,BCF,rmax,beta, &
@@ -271,5 +276,6 @@ program GSPHERE
          write (1,*) 3,(IT(j1,j2)-1,j2=1,3)
 190     end do
         close(unit=1)
+        deallocate(IT,MUT,PHIT)
        endif
        end program GSPHERE

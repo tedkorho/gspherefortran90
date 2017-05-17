@@ -45,17 +45,22 @@ contains
 
        implicit none
        integer,intent(in) :: ntr
-       integer,intent(inout) :: IT(260000,3),nnod,ntri
-       real(8),intent(inout) :: MU(130000),PHI(130000)
-       integer :: NJJ(0:360,0:720),j0,j1,j2,j3
-       real(8) :: U(130000,3),the,fi,ct,st,cf,sf,pi
+       integer,intent(inout) :: nnod,ntri!,IT(260000,3)  ! IT into dyn-array
+       integer,intent(inout),allocatable :: IT(:,:)
+       !real(8),intent(inout) :: MU(130000),PHI(130000)  ! MU,PHI into dyn-array
+       real(8),intent(inout),allocatable :: MU(:),PHI(:)
+       integer :: NJJ(0:360,0:720),j0,j1,j2,j3          ! NJJ maybe into dyn-array
+       real(8) :: U(130000,3),the,fi,ct,st,cf,sf,pi     ! U into dyn-array
+       !real(8) :: U(:,3)
 
        pi=4.0d0*atan(1.0d0)
 
 ! NODES:
 
 ! Upper hemisphere including equator:
-
+       if(.not. (allocated(IT) .or. allocated(MU) .or. allocated(PHI))) &
+          stop 'trouble in TRIDS: arrays not allocated'
+       
        nnod=1
        U(nnod,1)=0.0d0
        U(nnod,2)=0.0d0
@@ -130,11 +135,13 @@ contains
          j0=(j3-1)*j1
          
          ntri=ntri+1
+         ! reallocate IT
          IT(ntri,1)=NJJ(j1-1,j0-(j3-1))
          IT(ntri,2)=NJJ(j1,  j0       )
          IT(ntri,3)=NJJ(j1,  j0+1     )
                             
          do 50 j2=j0+1,j0+j1-1
+          ! reallocate IT x2
           ntri=ntri+1
           IT(ntri,1)=NJJ(j1,  j2         )
           IT(ntri,2)=NJJ(j1-1,j2  -(j3-1))
@@ -155,12 +162,14 @@ contains
          j0=(j3-1)*(2*ntr-j1)
          
          ntri=ntri+1
+         ! reallocate IT
          IT(ntri,1)=NJJ(j1,  j0         )
          IT(ntri,2)=NJJ(j1-1,j0+1+(j3-1))
          IT(ntri,3)=NJJ(j1-1,j0  +(j3-1))
                             
          do 80 j2=j0+1,j0+(2*ntr-j1)
           ntri=ntri+1
+          ! reallocate IT x2
           IT(ntri,1)=NJJ(j1,  j2         )
           IT(ntri,2)=NJJ(j1-1,j2+(j3-1)  )
           IT(ntri,3)=NJJ(j1,  j2-1       )

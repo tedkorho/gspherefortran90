@@ -7,7 +7,9 @@ module corrfunc
 ! CS1CF   : power law correlation function
 ! CS2CF   : modified Gaussian correlation function
 ! CS3CF   : input correlation function coefficients from file
-        ! Modules used:
+        !
+        ! Required modules:
+        !
         use specfunc    ! Special functions.
 
 contains
