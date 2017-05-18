@@ -187,7 +187,6 @@ subroutine CS3CF(CSCF,lmin,lmax)
 
 implicit none
 integer,intent(in) :: lmin, lmax
-! real(8),intent(inout) :: CSCF(0:256)
 real(8),intent(inout),allocatable :: CSCF(:)
 integer :: l,ll
 real(8) :: norm

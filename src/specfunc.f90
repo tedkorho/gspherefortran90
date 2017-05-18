@@ -134,7 +134,7 @@ subroutine BESMSA(BESISE,x,n)
 
 ! Generates modified spherical Bessel functions multiplied by an
 ! exponential: i_0(x)*exp(-x),...,i_n(x)*exp(-x). Version 2002-12-16.
-! Uses dynamically allocated arrays.
+! This version uses dynamically allocated arrays.
 !
 ! Copyright (C) 2002 Karri Muinonen
 
