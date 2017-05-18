@@ -61,7 +61,7 @@ implicit none
        
        
 integer :: nss,lmin,lmax, &
-j0,j1,j2,gflg,dflg,cflg
+j0,j1,j2,gflg,dflg,cflg,fflg
 
 integer :: nthe,nphi,ntr,nnod,ntri
 integer,allocatable :: IT(:,:)
@@ -72,7 +72,8 @@ real(rk),allocatable :: MUT(:),PHIT(:),XT(:,:),NT(:,:)
 real(rk) :: CEU(3),SEU(3),a,sig,beta,gami,elli,nuc,rmax,pi,rd
 real(rk),allocatable :: CSCF(:),SCFSTD(:,:),ACF(:,:),BCF(:,:)
 character :: ca*2
-character(32) :: infile,outfile
+character(32) :: infile,outfile,matlabx,matlaby,matlabz, &
+                 letterx='x',lettery='y',letterz='z'
 
 logical :: there
 integer :: irnd
@@ -100,7 +101,7 @@ open(unit=1, file=trim(infile), status='old')
 
 a=1.0d0
 read (1,30) ca
-read (1,20) gflg     ! General (1) or axisymmetri! spheres (2).
+read (1,20) gflg     ! General (1) or axisymmetric spheres (2).
 read (1,20) dflg     ! Spherical-coord. (1) or triangle (2) discretization.
 read (1,20) cflg     ! Cor. function (C_1=power law, C_2=Gauss, C_3=file).
 read (1,10) sig      ! Relative standard deviation of radial distance.
@@ -112,7 +113,8 @@ read (1,20) nthe     ! Discretization: number of polar angles.
 read (1,20) nphi     ! Discretization: number of azimuths.
 read (1,20) ntr      ! Discretization: number of triangle rows per octant.
 read (1,20) nss      ! Sphere identification number.
-read (1,40) outfile
+read (1,20) fflg     ! Matlab (1), vtk (2), or idf (3) output.
+read (1,40) outfile  ! vtk or idf output file name.
 10     format (E12.6)
 20     format (I12)
 30     format (/A2/)
@@ -159,6 +161,9 @@ if (ntr.gt.180) stop &
 
 if (nss.le.0) stop &
  'Trouble in GSPHERE: sphere identification number .lt. 0.'
+
+if (fflg.le.0 .or. fflg.ge.4) stop &
+ 'Trouble in GSPHERE: output format not specified properly'
 
 ! Miscellaneous:
 
@@ -241,49 +246,56 @@ else
    deallocate(ACF)
   endif
 
-  open(unit=1, file='output/matlabx.out')           ! Matlab
-  open(unit=2, file='output/matlaby.out')
-  open(unit=3, file='output/matlabz.out')
-  do j2=1,3
-   write (1,125) (XT(IT(j1,j2),1),j1=1,ntri)
-   write (2,125) (XT(IT(j1,j2),2),j1=1,ntri)
-   write (3,125) (XT(IT(j1,j2),3),j1=1,ntri)
-  end do
+  if(fflg.eq.1) then
+   matlabx= trim(outfile) // trim(letterx) 
+   matlaby= trim(outfile) // trim(lettery) 
+   matlabz= trim(outfile) // trim(letterz) 
+   open(unit=1, file=matlabx)           ! Matlab
+   open(unit=2, file=matlaby)
+   open(unit=3, file=matlabz)
+   do j2=1,3
+    write (1,125) (XT(IT(j1,j2),1),j1=1,ntri)
+    write (2,125) (XT(IT(j1,j2),2),j1=1,ntri)
+    write (3,125) (XT(IT(j1,j2),3),j1=1,ntri)
+   end do
 125     format(130000(E14.8,1X))
-  close(unit=3)
-  close(unit=2)
-  close(unit=1)
+   close(unit=3)
+   close(unit=2)
+   close(unit=1)
 
-  open(unit=1, file='output/idl.out')               ! IDL
-  write (1,*) nnod,ntri
-  do j1=1,nnod
-   write (1,*) (XT(j1,j2),j2=1,3)
-  end do
-  do j1=1,ntri
-   write (1,*) 3
-   write (1,*) (IT(j1,j2),j2=1,3)
-  end do
-  close(unit=1)
+  elseif(fflg.eq.3) then
+   open(unit=1, file=trim(outfile))               ! IDL
+   write (1,*) nnod,ntri
+   do j1=1,nnod
+    write (1,*) (XT(j1,j2),j2=1,3)
+   end do
+   do j1=1,ntri
+    write (1,*) 3
+    write (1,*) (IT(j1,j2),j2=1,3)
+   end do
+   close(unit=1)
 
-
-  open(unit=1, file=trim(outfile))               ! VTK
-  write (1,150) '# vtk DataFile Version 2.0'
-  write (1,150) 'gsphere output            '
-  write (1,150) 'ASCII                     '
-  write (1,150) 'DATASET POLYDATA          '
-  write (1,160) 'POINTS ',nnod,' float'
+  elseif(fflg.eq.2) then
+   open(unit=1, file=trim(outfile))               ! VTK
+   write (1,150) '# vtk DataFile Version 2.0'
+   write (1,150) 'gsphere output            '
+   write (1,150) 'ASCII                     '
+   write (1,150) 'DATASET POLYDATA          '
+   write (1,160) 'POINTS ',nnod,' float'
 150     format(a26)
 160     format(a7,I7,A7)
-  do j1=1,nnod
-   write (1,*) (XT(j1,j2),j2=1,3)
-  end do
-  write (1,180) 'POLYGONS ',ntri,4*ntri
+   do j1=1,nnod
+    write (1,*) (XT(j1,j2),j2=1,3)
+   end do
+   write (1,180) 'POLYGONS ',ntri,4*ntri
 180     format(a9,I7,I7)
- do j1=1,ntri
-  write (1,*) 3,(IT(j1,j2)-1,j2=1,3)
- end do
- close(unit=1)
- 
+   do j1=1,ntri
+    write (1,*) 3,(IT(j1,j2)-1,j2=1,3)
+   end do
+   close(unit=1)
+  endif
+  
  deallocate(IT,MUT,PHIT)
+
 endif
 end program GSPHERE

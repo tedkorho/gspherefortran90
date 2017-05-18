@@ -1,0 +1,18 @@
+   
+INPUT FILE for gsphere.f (Version 2002-12-16)
+   
+1               ! General (1) or axisymmetric G-spheres (2).
+2               ! Spherical-coord. (1) or triangle (2) discretization.
+1               ! Cor. function (C_1=power law, C_2=Gauss, C_3=file).
+0.2d0           ! Relative standard deviation of radial distance.
+3.0d0           ! Power law index for C_1 correlation.
+30.0d0          ! Input angle for C_2 correlation.
+2               ! Minimum degree in C_1, C_2, C_3.
+10              ! Maximum degree in C_1, C_2, C_3.
+74              ! Discretization: number of polar angles.
+72             ! Discretization: number of azimuths.
+22              ! Discretization: number of triangle rows per octant.
+1               ! G-sphere identification number.
+3               ! Matlab coordinate (1), .vtk (2), or .idf (3) output.
+output/out4.idf
+                ! Name of the output file
