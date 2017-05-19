@@ -65,7 +65,7 @@ j0,j1,j2,gflg,dflg,cflg,fflg
 
 integer :: nthe,nphi,ntr,nnod,ntri
 integer,allocatable :: IT(:,:)
-real(rk) :: XS(0:180,0:360,3), &
+real(rk) :: XS(0:180,0:360,3), &  
  MUS(0:180),PHIS(0:360)
 real(rk),allocatable :: MUT(:),PHIT(:),XT(:,:),NT(:,:)
 
